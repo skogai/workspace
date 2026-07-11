@@ -1,0 +1,97 @@
+{
+  "name": "workspace",
+  "generated": "2026-07-11",
+  "packageManager": "bun@1.3.14",
+  "buildSystem": "nx@23.0.2",
+  "nxCloud": true,
+  "structure": {
+    "apps": ["apps/api", "apps/api-e2e"],
+    "agentConfigDirs": [".claude", ".agents", ".codex", ".opencode", ".omo"]
+  },
+  "entryPoints": [
+    { "path": "apps/api/src/main.ts", "type": "server", "description": "Fastify app bootstrap" },
+    { "path": "apps/api/src/app/app.ts", "type": "module", "description": "Fastify plugin/route registration via autoload" },
+    { "path": "apps/api-e2e/src/api/api.spec.ts", "type": "test", "description": "E2E smoke test against running API" }
+  ],
+  "projects": [
+    {
+      "name": "@workspace/api",
+      "root": "apps/api",
+      "sourceRoot": "apps/api/src",
+      "dependencies": ["fastify", "fastify-plugin", "@fastify/autoload", "@fastify/sensible"],
+      "targets": {
+        "build": { "executor": "@nx/esbuild:esbuild" },
+        "serve": { "executor": "@nx/js:node", "dependsOn": ["build"] },
+        "test": { "executor": "@nx/jest:jest", "jestConfig": "apps/api/jest.config.cts" },
+        "prune-lockfile": { "executor": "@nx/js:prune-lockfile", "dependsOn": ["build"] },
+        "copy-workspace-modules": { "executor": "@nx/js:copy-workspace-modules", "dependsOn": ["build"] },
+        "prune": { "executor": "nx:noop", "dependsOn": ["prune-lockfile", "copy-workspace-modules"] },
+        "docker:build": { "dependsOn": ["build", "prune"] }
+      }
+    },
+    {
+      "name": "@workspace/api-e2e",
+      "root": "apps/api-e2e",
+      "sourceRoot": "apps/api-e2e/src",
+      "implicitDependencies": ["@workspace/api"],
+      "targets": {
+        "e2e": {
+          "executor": "@nx/jest:jest",
+          "jestConfig": "apps/api-e2e/jest.config.cts",
+          "dependsOn": ["@workspace/api:build", "@workspace/api:serve"]
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "nx.json": "workspace config; inferred-task plugins @nx/vite/plugin, @nx/docker; nxCloudId set",
+    "package.json": "root manifest, bun workspaces [apps/*]",
+    "mise.toml": "task runner wrapping bunx nx for install/serve/build/test/e2e",
+    "tsconfig.base.json": "shared TypeScript config",
+    "jest.config.ts": "root Jest preset",
+    "eslint.config.mjs": "ESLint flat config",
+    ".claude/settings.json": "Claude Code settings; declares nx-claude-plugins marketplace/plugin",
+    ".claude/skills/": [
+      "nx-workspace",
+      "nx-generate",
+      "nx-import",
+      "nx-plugins",
+      "nx-run-tasks",
+      "monitor-ci",
+      "link-workspace-packages"
+    ]
+  },
+  "documentation": [
+    { "path": "README.md", "topic": "Nx-generated workspace quickstart" },
+    { "path": "CLAUDE.md", "topic": "Agent guidance: use nx CLI via package manager, invoke nx-workspace/nx-generate skills" },
+    { "path": "AGENTS.md", "topic": "Same agent guidance, Codex/AGENTS.md convention" }
+  ],
+  "testing": {
+    "runner": "Jest via @nx/jest:jest",
+    "unitTestFiles": ["apps/api/src/app/app.spec.ts"],
+    "e2eTestFiles": ["apps/api-e2e/src/api/api.spec.ts"],
+    "coverage": null
+  },
+  "keyDependencies": {
+    "nx": "23.0.2",
+    "@nx/vite": "23.0.2",
+    "@nx/docker": "23.0.2",
+    "@nx/jest": "23.0.2",
+    "@nx/node": "23.0.2",
+    "@nx/plugin": "23.0.2",
+    "@nx/web": "23.0.2",
+    "@nx/workspace": "^23.0.2",
+    "fastify": "~5.2.1",
+    "fastify-plugin": "~5.0.1",
+    "@fastify/autoload": "~6.0.3",
+    "@fastify/sensible": "~6.0.2",
+    "jest": "~30.3.0",
+    "vite": "^8.0.0"
+  },
+  "quickStart": [
+    "mise run install",
+    "mise run serve",
+    "mise run test",
+    "mise run e2e"
+  ]
+}
