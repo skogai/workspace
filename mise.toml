@@ -1,0 +1,27 @@
+[tools]
+bun = "latest"
+node = "26.4.0"
+
+[tasks.install]
+description = "Install workspace dependencies with Bun"
+run = "bun install"
+
+[tasks.nx]
+description = "Run Nx through the Mise-managed Bun toolchain"
+run = "bunx nx"
+
+[tasks.serve]
+description = "Serve the API app"
+run = "bunx nx serve @workspace/api"
+
+[tasks.build]
+description = "Build the API app"
+run = "bunx nx build @workspace/api"
+
+[tasks.test]
+description = "Run API unit tests"
+run = "bunx nx test @workspace/api"
+
+[tasks.e2e]
+description = "Run API e2e tests"
+run = "bunx nx e2e @workspace/api-e2e"
