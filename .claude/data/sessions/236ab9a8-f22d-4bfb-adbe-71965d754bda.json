@@ -1,0 +1,9 @@
+{
+  "session_id": "236ab9a8-f22d-4bfb-adbe-71965d754bda",
+  "prompts": [
+    "/sc:index-repo",
+    "/sc:document",
+    "what you have learned this session"
+  ],
+  "agent_name": "Echo"
+}
